@@ -17,10 +17,10 @@ nginx及其模块的功能全部由配置文件进行定义，一般情况下，
 ### 启动、停止、重载配置
 >To start nginx, run the executable file. Once nginx is started, it can be controlled by invoking the executable with the -s parameter. Use the following syntax:
 
-直接执行nginx可执行文件即可启动Nginx，一旦启动完成，可通过可执行文件的-s参数进行控制，一般语法如下：
+直接执行nginx可执行文件即可启动Nginx，一旦启动完成，可通过可执行文件的-s参数进行通信，一般语法如下：
 > nginx -s *signal*
 sinal信号可以是以下几种：
-1. stop - 快速停止
+1. stop - 快速退出
 2. quit - 安全退出
 3. reload - 重载配置文件
 4. reopen - 重新打开日志文件
@@ -76,7 +76,7 @@ http {
 > Generally, the configuration file may include several server blocks distinguished by ports on which they listen to and by server names. Once nginx decides which server processes a request, it tests the URI specified in the request’s header against the parameters of the location directives defined inside the server block.
 > Add the following location block to the server block:
 
-通常情况下，配置文件会有多个server节点，通过**isten**与**server_name**所指定的端口与域名进行区分，nginx在得知某一请求由哪个server节点处理一个请求，接下来将会通过**location**指令所定义的去拦截请示中的URI参数来处理具体的请求。
+通常情况下，配置文件会有多个server节点，通过**listen**与**server_name**所指定的端口与域名进行区分，nginx在得知某一请求由哪个server节点处理一个请求，接下来将会通过**location**指令所定义的去拦截请示中的URI参数来处理具体的请求。
 
 添加**location**节点到**server**节点之下：
 ```yaml
