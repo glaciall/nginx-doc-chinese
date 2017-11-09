@@ -29,7 +29,8 @@ sinal信号可以是以下几种：
 
 比如，在停止nginx进程前，等待worker进程处理完当前所有的请求，可以通过如下指令：
 > nginx -s quit
-==注意，此命令必须与启动Nginx时是同一用户环境==
+
+**注意，此命令必须与启动Nginx时是同一用户环境**
 
 >Changes made in the configuration file will not be applied until the command to reload configuration is sent to nginx or it is restarted. To reload configuration, execute:
 
@@ -125,6 +126,7 @@ server {
 
 需要应用此配置项，启动Nginx或是发送重载配置的指令到nginx的主进程，执行如下命令：
 > nginx -s reload
-==对于某些未预期到的一些问题，你可以从日志文件中查找原因，一般在/usr/local/nginx/logs或/var/log/nginx下查找access.log文件==
+
+**对于某些未预期到的一些问题，你可以从日志文件中查找原因，一般在/usr/local/nginx/logs或/var/log/nginx下查找access.log文件**
 
 ### 配置简单的代理服务器
