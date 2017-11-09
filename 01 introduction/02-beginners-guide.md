@@ -119,7 +119,7 @@ server {
 
 >This is already a working configuration of a server that listens on the standard port 80 and is accessible on the local machine at http://localhost/. In response to requests with URIs starting with /images/, the server will send files from the /data/images directory. For example, in response to the http://localhost/images/example.png request nginx will send the /data/images/example.png file. If such file does not exist, nginx will send a response indicating the 404 error. Requests with URIs not starting with /images/ will be mapped onto the /data/www directory. For example, in response to the http://localhost/some/example.html request nginx will send the /data/www/some/example.html file.
 
-这己经是一个可用的配置文件了，它监听在80标准端口，而且可以在本机上使用http://localhost进行访问，响应以/images/开头的请求时，服务器将会响应/data/images目录下的文件，比如，当有请求http://localhost/images/example.png时，nginx将响应/data/images/example.png这个文件。如果此文件不存在，nginx将会响应404错误。不以/images/开头的请求将会映射到/data/www目录下。例如，http://localhost/some/example.html，此请求nginx将会响应/data/www/some/example.html这个文件。
+这己经是一个可用的配置文件了，它监听在80标准端口，而且可以在本机上使用http://localhost/ 进行访问，响应以/images/开头的请求时，服务器将会响应/data/images目录下的文件，比如，当有请求http://localhost/images/example.png 时，nginx将响应/data/images/example.png这个文件。如果此文件不存在，nginx将会响应404错误。不以/images/开头的请求将会映射到/data/www目录下。例如，http://localhost/some/example.html ，此请求nginx将会响应/data/www/some/example.html这个文件。
 
 >To apply the new configuration, start nginx if it is not yet started or send the reload signal to the nginx’s master process, by executing:
 
