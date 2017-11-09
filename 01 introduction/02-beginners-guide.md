@@ -65,7 +65,7 @@ WEB服务器的一个重要功能是提供文件浏览（比如图片、静态HT
 
 首先，创建/data/www目录，创建index.html并写入一些文本内容，并在/data/images目录下存放一些图片文件。
 然后，打开配置文件，默认的配置文件己经有一些server节点的样例了（大部分被注释掉了），现在创建一个新的server节点开始：
-```yaml
+```
 http {
 	server {
     
@@ -79,7 +79,7 @@ http {
 通常情况下，配置文件会有多个server节点，通过**listen**与**server_name**所指定的端口与域名进行区分，nginx在得知某一请求由哪个server节点处理一个请求，接下来将会通过**location**指令所定义的去拦截请示中的URI参数来处理具体的请求。
 
 添加**location**节点到**server**节点之下：
-```yaml
+```
 location / {
 	root /data/www;
 }
@@ -92,7 +92,7 @@ location / {
 > Next, add the second location block:
 
 接下来，添加第二个**location**节点：
-```yaml
+```
 location /images/ {
 	root /data;
 }
@@ -105,7 +105,7 @@ location /images/ {
 >The resulting configuration of the server block should look like this:
 
 现在整体的配置大致如下：
-```yaml
+```
 server {
     location / {
         root /data/www;
