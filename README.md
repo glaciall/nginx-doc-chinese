@@ -1,6 +1,6 @@
 ## 介绍
-- [安装nginx](./blob/master/01%20introduction/01-installing-nginx.md)
-- [新手手册](./blob/master/01%20introduction/02-beginners-guide.md)
+- [安装nginx](./01%20introduction/01-installing-nginx.md)
+- [新手手册](./01%20introduction/02-beginners-guide.md)
 - ~~高手手册~~
 - nginx管理
 - 连接处理模式
