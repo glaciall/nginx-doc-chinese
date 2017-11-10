@@ -130,3 +130,169 @@ server {
 **对于某些未预期到的一些问题，你可以从日志文件中查找原因，一般在/usr/local/nginx/logs或/var/log/nginx下查找access.log文件**
 
 ### 配置简单的代理服务器
+>One of the frequent uses of nginx is setting it up as a proxy server, which means a server that receives requests, passes them to the proxied servers, retrieves responses from them, and sends them to the clients.
+
+nginx最常用的用途是作为代理服务器，它接收请求并转发到被代理的服务器，并且将其的响应内容发送到客户端。
+>We will configure a basic proxy server, which serves requests of images with files from the local directory and sends all other requests to a proxied server. In this example, both servers will be defined on a single nginx instance.
+
+我们将配置一个基础的代理服务器，它并代理图片文件的请求到被代理的服务器上，在这个例子里，代理服务器与被代理服务器都将定义在同一个nginx实例里。
+
+>First, define the proxied server by adding one more server block to the nginx’s configuration file with the following contents:
+
+首先，添加如下**server**节点到nginx的配置文件中，作为被代理的服务器：
+```
+server {
+    listen 8080;
+    root /data/up1;
+
+    location / {
+    }
+}
+```
+
+>This will be a simple server that listens on the port 8080 (previously, the listen directive has not been specified since the standard port 80 was used) and maps all requests to the /data/up1 directory on the local file system. Create this directory and put the index.html file into it. Note that the root directive is placed in the server context. Such root directive is used when the location block selected for serving a request does not include own root directive.
+
+这是一个简易的服务器，监听在8080端口（因为80标准端口己经在之前的配置里使用过了而8080没有），并且映射了所有的所有的请求到/data/up1目录下。在本地文件系统上创建这个目录，并且建立一个index.html的文件。注意，**root**指令放在了**server**节点之内，这样**root**指令将拦截所有**location**未匹配的请求项。
+>Next, use the server configuration from the previous section and modify it to make it a proxy server configuration. In the first location block, put the proxy_pass directive with the protocol, name and port of the proxied server specified in the parameter (in our case, it is http://localhost:8080):
+
+接下来，使用上一段内容里的服务器配置并且稍作修改，令其成为一个代理服务器。在第一个**location**节点，写入**proxy_pass**指令，参数包括被代理服务器的协议、域名及端口（在我们的例子里，应该是http://localhost:8080 ）：
+```
+server {
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+
+    location /images/ {
+        root /data;
+    }
+}
+```
+>We will modify the second location block, which currently maps requests with the /images/ prefix to the files under the /data/images directory, to make it match the requests of images with typical file extensions. The modified location block looks like this:
+
+我们现在修改第二个**location**节点，它现在映射前缀为/images/的请求到/data/images目录，为了让它匹配常规的图片文件后缀，我们修改**location**节点成如下：
+```
+location ~ \.(gif|jpg|png)$ {
+    root /data/images;
+}
+```
+
+>The parameter is a regular expression matching all URIs ending with .gif, .jpg, or .png. A regular expression should be preceded with ~. The corresponding requests will be mapped to the /data/images directory.
+
+**location**的参数是一个正则表达式，它匹配所有以*.gif*、*.jpg*、*.png*结尾的URI请求（正则表达式须以*~*开头）。如此，相应的请求都将映射到/data/images目录下。
+
+>When nginx selects a location block to serve a request it first checks location directives that specify prefixes, remembering location with the longest prefix, and then checks regular expressions. If there is a match with a regular expression, nginx picks this location or, otherwise, it picks the one remembered earlier.
+
+nginx首先依前缀匹配到了**location**节点，但是**location**是以最长匹配来最终决定的，所有它会测试这个正则表达式，如果相匹配，nginx将会选择这个**location**节点，否则会选用前一个。
+>The resulting configuration of a proxy server will look like this:
+
+最终，这个代理服务器的配置如下：
+```
+server {
+    location / {
+        proxy_pass http://localhost:8080/;
+    }
+
+    location ~ \.(gif|jpg|png)$ {
+        root /data/images;
+    }
+}
+```
+
+>This server will filter requests ending with .gif, .jpg, or .png and map them to the /data/images directory (by adding URI to the root directive’s parameter) and pass all other requests to the proxied server configured above.
+
+>To apply new configuration, send the reload signal to nginx as described in the previous sections.
+
+>There are many more directives that may be used to further configure a proxy connection.
+
+这个服务器将*.gif*、*.jpg*、*.png*结尾的请求映射到/data/images目录（通过**root**指令添加到URI上），并且透过所有其它的请求到我们的被代理的服务器上。
+
+需要应用这些配置项，发送*reload*信号到nginx进程（详见上文所述）。
+
+另外还有更多的指令可以应用在代理服务器上，可令其更加强大。
+
+### 设置FastCGI代理
+>nginx can be used to route requests to FastCGI servers which run applications built with various frameworks and programming languages such as PHP.
+
+nginx可以转发请求到具有运行FastCGI应用服务器上，比如像PHP这类拥有大量开发框架的编程语言。
+>The most basic nginx configuration to work with a FastCGI server includes using the fastcgi_pass directive instead of the proxy_pass directive, and fastcgi_param directives to set parameters passed to a FastCGI server. Suppose the FastCGI server is accessible on localhost:9000. Taking the proxy configuration from the previous section as a basis, replace the proxy_pass directive with the fastcgi_pass directive and change the parameter to localhost:9000. In PHP, the SCRIPT_FILENAME parameter is used for determining the script name, and the QUERY_STRING parameter is used to pass request parameters. The resulting configuration would be:
+
+我们使用**fastcgi_pass**指令代替**proxy_pass**来转发请求到FastCPU服务器上，**fastcgi_param**负责转发参数。假设FastCGI运行于localhost:9000，使用上一段里的代理服务器的配置，将**proxy_pass**指令替换为**fastcgi_pass**，将参数改为localhost:9000。在PHP里，*SCRIPT_FILENAME*参数用于确定php脚本文件，*QUERY_STRING*参数用于传递请求参数，配置如下：
+```
+server {
+    location / {
+        fastcgi_pass  localhost:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param QUERY_STRING    $query_string;
+    }
+
+    location ~ \.(gif|jpg|png)$ {
+        root /data/images;
+    }
+}
+```
+
+>This will set up a server that will route all requests except for requests for static images to the proxied server operating on localhost:9000 through the FastCGI protocol.
+
+这将除了静态图片以外的所有请求都转发到运行于localhost:9000的被代理的FastCGI服务器上。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
