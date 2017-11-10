@@ -178,7 +178,7 @@ location ~ \.(gif|jpg|png)$ {
 
 >The parameter is a regular expression matching all URIs ending with .gif, .jpg, or .png. A regular expression should be preceded with ~. The corresponding requests will be mapped to the /data/images directory.
 
-**location**的参数是一个正则表达式，它匹配所有以*.gif*、*.jpg*、*.png*结尾的URI请求（正则表达式须以*~*开头）。如此，相应的请求都将映射到/data/images目录下。
+**location**的参数是一个正则表达式，它匹配所有以.gif、.jpg、.png结尾的URI请求（正则表达式须以~开头）。如此，相应的请求都将映射到/data/images目录下。
 
 >When nginx selects a location block to serve a request it first checks location directives that specify prefixes, remembering location with the longest prefix, and then checks regular expressions. If there is a match with a regular expression, nginx picks this location or, otherwise, it picks the one remembered earlier.
 
@@ -204,9 +204,9 @@ server {
 
 >There are many more directives that may be used to further configure a proxy connection.
 
-这个服务器将*.gif*、*.jpg*、*.png*结尾的请求映射到/data/images目录（通过**root**指令添加到URI上），并且透过所有其它的请求到我们的被代理的服务器上。
+这个服务器将.gif、.jpg、.png结尾的请求映射到/data/images目录（通过**root**指令添加到URI上），并且透过所有其它的请求到我们的被代理的服务器上。
 
-需要应用这些配置项，发送*reload*信号到nginx进程（详见上文所述）。
+需要应用这些配置项，发送**reload**信号到nginx进程（详见上文所述）。
 
 另外还有更多的指令可以应用在代理服务器上，可令其更加强大。
 
