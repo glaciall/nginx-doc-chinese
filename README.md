@@ -2,14 +2,13 @@
 - [安装nginx](./01%20introduction/01-installing-nginx.md)
 - [新手手册](./01%20introduction/02-beginners-guide.md)
 - ~~高手手册~~
-- nginx管理
+- [nginx管理](./01%20introduction/03-controlling-nginx.md)
 - 连接处理模式
 - hash设置
 - 调试日志
 - 单位设置
 - 命令行参数
 - windows版的nginx
-
 - nginx如何处理请求
 - 服务名称server_name
 - 使用nginx作HTTP负载均衡
