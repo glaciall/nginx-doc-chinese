@@ -182,7 +182,7 @@ location ~ \.(gif|jpg|png)$ {
 
 >When nginx selects a location block to serve a request it first checks location directives that specify prefixes, remembering location with the longest prefix, and then checks regular expressions. If there is a match with a regular expression, nginx picks this location or, otherwise, it picks the one remembered earlier.
 
-nginx首先依前缀匹配到了**location**节点，但是**location**是以最长匹配来最终决定的，所有它会测试这个正则表达式，如果相匹配，nginx将会选择这个**location**节点，否则会选用前一个。
+nginx首先依前缀匹配到了**location**节点，但是**location**是以最长匹配来最终决定的，所以它会测试这个正则表达式，如果相匹配，nginx将会选择这个**location**节点，否则会选用前一个。
 >The resulting configuration of a proxy server will look like this:
 
 最终，这个代理服务器的配置如下：
