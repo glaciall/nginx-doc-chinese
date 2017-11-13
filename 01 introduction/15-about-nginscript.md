@@ -30,7 +30,7 @@ nginScript是一个JavaScript语言的子集，可以在**http**、**stream**节
 - evel函数
 - JSON对象
 - Error对象
-- setTimeout、setInterval、setImmediate等定时函数
+- setTimeout、setInterval、setImmediate等定时/延时函数
 - 非整形标量（.235）、二进制（0b0101）、八进制（0o77）。
 
 ### 下载和安装
@@ -51,6 +51,7 @@ nginScript源码可以用如下命令行进行克隆（需安装Mercurial）：
 
 然后可以使用**--add-module**配置安装：
 > ./configure --add-module=/path-to-njs/nginx
+
 > 注：这句应该在nginx源码目录执行，而非在njs的源码目录，需要在nginx源码编绎时声明此模块的源码路径
 
 此模块可编绎为动态模块：
