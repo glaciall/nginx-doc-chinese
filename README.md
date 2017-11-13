@@ -14,7 +14,7 @@
 - 使用nginx作HTTP负载均衡
 - 配置HTTPS服务器
 - nginx如何处理TCP/UDP会话
-- **关于nginScript**
+- [关于nginScript](./01%20introduction/15-about-nginscript.md)
 
 ## HOW-TO
 - 源码编绎安装Nginx
