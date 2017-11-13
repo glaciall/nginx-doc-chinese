@@ -49,7 +49,7 @@ nginScript目前在如下两个模块下启用：
 nginScript源码可以用如下命令行进行克隆（需安装Mercurial）：
 > hg clone http://hg.nginx.org/njs
 
-然后可以使用**--add-module**配置安装：
+然后可以使用--add-module配置安装：
 > ./configure --add-module=/path-to-njs/nginx
 
 > 注：这句应该在nginx源码目录执行，而非在njs的源码目录，需要在nginx源码编绎时声明此模块的源码路径
