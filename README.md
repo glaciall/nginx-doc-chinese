@@ -17,7 +17,7 @@
 - [关于nginScript](./01%20introduction/15-about-nginscript.md)
 
 ## HOW-TO
-- 源码编绎安装Nginx
+- [源码编绎安装Nginx](./02%20how-to/01-building-nginx-from-sources.md)
 - 在win32平台上使用Visual C编绎安装nginx
 - 在Amazon EC2平台上配置NGINX Plus环境
 - 使用DTrace pid provider调试nginx
