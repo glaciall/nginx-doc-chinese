@@ -10,6 +10,8 @@
 
 如果禁用它，nginx的跳转将是相对路径跳转。
 
+-----
+
 > 语法：aio on | off threads [=pool]
 
 > 默认：aio off;
@@ -73,6 +75,8 @@ aio threads=pool$disk;
 
 更多内容参见`sencdfile`指令。
 
+-----
+
 > 语法：aio_write on | off;
 
 > 默认：aio_write off;
@@ -82,6 +86,23 @@ aio threads=pool$disk;
     1.9.13起
 
 如果`aio`己启用，指明是否用于写文件。目前，此指令只用于己启用`aio_threads`，并且限于自被代理服务器响应的内容写入临时文件时的情景。
+
+-----
+
+> 语法：alias path;
+
+> 默认：---
+
+> 上下文：location
+
+定义指定`location`的别名，如下例：
+```
+location /i/ {
+    alias /data/w3/images/;
+}
+```
+当请求`/i/top.gif`时，将发送`/data/w3/images/top/gif`文件。
+
 
 
 
