@@ -32,7 +32,7 @@
 
 - 核心指令
 
-- ngx_http_core_module
+- [ngx_http_core_module](./04%20modules/04-ngx-http-core-module.md)
 - ngx_http_access_module
 - ngx_http_addition_module
 - ngx_http_api_module

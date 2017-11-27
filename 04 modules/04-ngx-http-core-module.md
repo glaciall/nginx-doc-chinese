@@ -101,7 +101,93 @@ location /i/ {
     alias /data/w3/images/;
 }
 ```
-当请求`/i/top.gif`时，将发送`/data/w3/images/top/gif`文件。
+当请求`/i/top.gif`时，将发送`/data/w3/images/top/gif`文件。`path`值可以包含变量（`$document_root`和`$realpath_root`除外）。
+如果在`location`中使用了正则表达式，那么`alias`可以引用此正则表达式的捕获组（0.7.40起），如：
+```
+location ~ ^/users/(.+\.(?:gif|jpe?g|png))$ {
+    alias /data/w3/images/$1;
+}
+```
+
+当`location`指令只匹配指令值的最末段时：
+```
+location /images/ {
+    alias /data/w3/images/;
+}
+```
+这时还不如使用`root`指令呢：
+```
+location /images/ {
+    root /data/w3/;
+}
+```
+
+-----
+
+> 语法：chunked_transfer_encoding on | off;
+
+> 默认：chunked_transfer_encoding on;
+
+> 上下文：http, server, location
+
+可在HTTP/1.1版本下禁用分段传输编码，可用于客户端未实现标准请求不支持分段传输编码时禁用掉。
+
+-----
+
+> 语法：client_body_buffer_size size;
+
+> 默认：client_body_buffer_size 8k | 16k;
+
+> 上下文：http, server, location
+
+设置读取客户端请求体（`译注：应该是请示头区之后的数体区`）读取时的缓冲区大小。如果请求体大于缓冲区大小，则整个或部分的请求体将写入到临时文件中。默认情况下，缓冲区大小将等于两个内存页大小。在x86平台、其它的32位平台及x86-64位平台上上是8k。64位平台上通常都是16K。
+
+-----
+
+> 语法：client_body_in_file_only on | clean | off;
+
+> 默认：client_body_in_file_only off;
+
+> 上下文：http, server, location
+
+决定了nginx是否将整个客户端请求体保存到文件中去。此指令可用于调试期、使用`$request_body_file`变量、在`ngx_http_perl_module`模块中调用`$r->request_body_file`方法。
+
+当设置为`on`，临时文件将在请求完成后`不删除`。
+
+当设置为`clean`时，请求时留下的临时文件将会在处理完成后自动清除。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
