@@ -156,6 +156,116 @@ location /images/ {
 
 当设置为`clean`时，请求时留下的临时文件将会在处理完成后自动清除。
 
+-----
+
+> 语法：client_body_in_single_buffer on | off;
+
+> 默认：client_body_in_single_buffer off;
+
+> 上下文：http, server, location
+
+决定了Nginx是否将请求体保存到同一个缓冲区。建议在使用`$request_body`变量时使用，可减少复制操作的次数。
+
+-----
+
+> 语法：client_body_temp_path path [level1 [level2 [level3]]]
+
+> 默认：client_body_temp_path client_body_temp;
+
+> 上下文：http, server, location
+
+指定保存客户端请求体的保存目录。可以在指定的路径下创建3级目录。如下例配置：
+
+> client_body_temp_path /spool/nginx/client_temp 1 2;
+
+临时文件将会保存为如下路径：
+
+> /spool/nginx/client_temp/7/45/00000123457
+
+-----
+
+> 语法：client_body_timeout time;
+
+> 默认：client_body_timeout 60s;
+
+> 上下文：http, server, location
+
+设置读取请求体的超时时长。此超时时长用于两个成功的读取间的超时，不是读取整个请求体的时长。如果客户端在此时间里未发送任何内容，服务器将返回408（请求超时）错误到客户端。
+
+-----
+
+> 语法：client_header_buffer_size size;
+
+> 默认：client_header_buffer_size 1k;
+
+> 上下文：http, server
+
+设置读取请求头（header）的缓冲区大小。1K字节对于绝大部分请求己经足够了，但是如果接收到了一个包含了长cookie、或是来自于WAP客户端的请求时，就不止1K大小了。如果是请求行（第1行，GET、 HTTP/1.0这一行上）或是某一请求头的值超过了设置值，则可以使用`large_client_header_buffers`指令进行设置。
+
+-----
+
+> 语法：client_header_timeout time;
+
+> 默认：client_header_timeout 60s
+
+> 上下文：http, server
+
+设置读取客户端请求头的超时时长。如果客户在此内容内未发送完整个请求头，则将返回408错误（请求超时）。
+
+-----
+
+> 语法：client_max_body_size size;
+
+> 默认：client_max_body_size 1m;
+
+> 上下文：http, server, location
+
+设置在“Content-Length”请求头里指定的请求体的最大大小。如果值超过了配置值，将返回413错误（请求体过大）到客户端。注意：客户端浏览器可能不能正确的显示此错误，可设置`size`值为0来禁用此检查项。
+
+-----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
