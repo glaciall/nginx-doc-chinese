@@ -286,15 +286,19 @@ location /images/ {
 决定了打开文件时的符号链接的处理方式：
 
 off
+
     允许路径中的符号链接并且不检查，这是默认行为。
     
 on
+
     如果路径中任何一段是符号链接，访问将被拒绝。
     
 if_not_owner
+
     如果路径中任何一段是符号链接，并且链接是属于不同的属主时访问被拒绝。
     
 from=part
+
     当检查符号链接时（参数启用并且`if_not_owner`己设定），所有部分都会被检查，使用此参数将避开设定路径开头部分的符号链接检查。如果值不是路径的开头部分或是匹配了整个路径，则整个路径都不检查。参数值可以使用变量。
 
 例：
@@ -399,12 +403,15 @@ error_page 404 =301 http://example.com/notfound.html;
 设置带有"If-Modified-Since"请求头的响应内容的修改时间的比较方式：
 
 off
+
     "If-Modified-Since"请求头将被忽略（0.7.34）。
     
 exact
+
     精确匹配
     
 before
+
     响应内容的修改时间小于或等于"If-Modified-Since"请求头的时间。
 
 -----
@@ -625,9 +632,8 @@ listen [::1];
 listen unix:/var/run/nginx.sock;
 ```
 
-如果只设定了地址，端口默认为80.
-
-> If the directive is not present then either *:80 is used if nginx runs with the superuser privileges, or *:8000 otherwise.
+如果只设定了地址，则端口默认为80。
+如果此指令未设置，当nginx以高权限用户运行时，将监听于`*:80`，或是`*:8000`。
 
 如果声明了参数`default_server`，则此服务器将成为绑定在`address:port`上的默认服务器。否则，第一个声明了同一个`address:port`的服务器将成为默认服务器。
 
@@ -644,30 +650,39 @@ listen unix:/var/run/nginx.sock;
 `listen`指令可以在进行套接字相关的系统调用时附带多个参数，这些参数可以声明于任何一个`listen`指令，但对于同一个`address:port`对只能声明一次。
 
 setfib=number
+
     此参数设置结合路由表，监听套接字的FIB（SO_SETFIB选项），当前只在FreeBSD上生效。
     
 fastopen=number
+
     启用监听套接字的`TCP Fast Open`，并且限制未完成三方握手的连接队列的最大长度。
     
 backlog=number
+
     设置`listen()`调用时的`backlog`参数，限制连接等待的队列的最大长度。默认情况下，在FreeBSD、DragonFly BSD及macOS，`backlog`设置为-1（即无限制），其它平台上为511.
     
 rcvbuf=size
+
     设置监听套接字的接收缓冲区大小（SO_RCVBUF选项）。
 
 sndbuf=size
+
     设置监听套接字的发送缓冲区大小（SO_SNDBUF）。
 
 accept_filter=filter
+
     设置监听套接字的接收过滤器的名称（SO_ACCEPTFILTER选项），用于过滤传递到`accept()`的来源连接。此选项只工作于FreeBSD及NetBSD 5.0+。值可以是`dataready`或`httpready`。
 
 deferred
+
     在linux上使用延迟`accept()`（TCP_DEFER_ACCEPT选项）。
 
 bind
+
     为指定的`address:port`对进行一个隔离的`bind()`调用。这很有用，当有多个`listen`指令以不同的地址同一端口进行绑定，且有一个`listen`的指令以（*:port）进行监听时，nginx只会`bind()`到`*:port`上（以上说的是同一个port的情况）。应该注意的是，`getsockname()`调用将会用于确定哪个地址来接收连接。如果`setfib`、`backlog`、`rcvbuf`、`sndbuf`、`accept_filter`、`deferred`、`ipv6only`、`so_keepalive`等己启用，系统将始终进行隔离的`bind()`调用。
 
 ipv6only=on|off
+
     此参数决定了只接收指定通配符的IPv6套接字连接（通过IPV6_V6ONLY选项），或是同时支持IPv4和IPv6的连接。此参数默认开启，它仅可以在启动时设置一次。
 
 
