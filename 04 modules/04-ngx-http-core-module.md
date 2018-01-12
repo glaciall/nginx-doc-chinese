@@ -685,23 +685,92 @@ ipv6only=on|off
 
     此参数决定了只接收指定通配符的IPv6套接字连接（通过IPV6_V6ONLY选项），或是同时支持IPv4和IPv6的连接。此参数默认开启，它仅可以在启动时设置一次。
 
+reuseport
 
+    此参数将命令nginx为每一个工作进程创建独立的监听套接字（使用SO_REUSEPORT选项）。允许内核调度连入的连接到不同的工作进程中去。仅适用于Linux内核3.9+以及DragonFlyBSD上。
 
+so_keepalive=on|off|[keepidle]:[keepintvl]:[keepcnt]
 
+    此参数配置监听端口的"TCP keepalive"行为。如果省略了此参数，将使用操作系统的设置。如果设置为"on"，将为套接字启用“SO_KEEPALIVE”选项。值“off”将关闭此选项。有些操作系统支持通过`TCP_KEEPIDLE`、`TCP_KEEPINTVL`、`TCP_KEEPCNT`选项来设置每个套接字的 Tcp keepalive参数(目前，只有Linux 2.4+、NetBSD 5+、FreeBSD 9.0 STABLE支持)。如果省略了一两个选项，将以系统默认选项为准。
+    
+```
+so_keepalive=30m::10
+```
 
+将设置闲置时间到30分钟（TCP_KEEPIDLE选项），探测间隔（TCP_KEEPINTVL选项）为系统默认值，探测次数（TCP_KEEPCNT选项）为10次。
 
+例：
 
+```
+listen 127.0.0.1 default_server accept_filter=dataready backlog=1024;
+```
 
+-----
 
+> 语法：location [ = | ~ | ~* | ^~ ] uri { ... }
 
+>       location @name { ... }
 
+> 默认：---
 
+> 上下文：server, location
 
+根据请求URI来设置配置项。
+匹配工作首先要将URI常规化，包括将“%XX”形式编码的文本解码、解析相对路径"."、".."、相邻的多个斜线合并为一个之后。
+一个地址可以定义为前缀字符串、或是一个正则表达式。正则表达式可以以`~*`修饰（大小写不敏感），或是以`~`修饰（大小写敏感）。为了查找请求地址的匹配项，nginx首先检查以前缀字符串字义的匹配项，最长匹配的项将会被记下来。然后接下来查找正则表达式里的匹配项，匹配顺序将以配置文件里的出现次序挨个进行，第一个匹配到的项将作为最终使用的配置项。如果没有找到，则以之前记下的前缀匹配项来进行配置。
 
+`location`块可以嵌套，同时有些例外情况：
+对于大小写敏感的操作系统如macOS、cygwin，matching with prefix strings ignores a case (0.7.7). However, comparison is limited to one-byte locales.
 
+正则表达式可以包含捕获组，并且可以在接下来的其它指令中引用到。
 
+如果最长的前缀匹配有`^~`修饰符，则将不再进行正则表达式匹配检查。
 
+同样的，使用`=`修饰符可以定义一个精准的URI匹配，如果找到了，则终止匹配搜索（不再进行其它的前缀匹配或正则表达式匹配）。例如，如果"/"的请求很频繁，那么定义一个`location = /`将会加快请求的处理，它将在第一次比例后终止匹配搜索，同时，这样的地址不允许进行嵌套`location`指令。
 
+> 从0.7.1到0.8.41版本，如果一个请求匹配的location不包含`=`和`~`修饰符，匹配搜索依然会终止，正则表达式匹配不会进行。
+
+让我们用几个例子来说明：
+
+```
+location = /
+{
+    [ 配置 A ]
+}
+location /
+{
+    [ 配置 B ]
+}
+location /documents/
+{
+    [ 配置 C ]
+}
+location ^~ /images/
+{
+    [ 配置 D ]
+}
+location ~* \.(gif|jpg|jpeg)$
+{
+    [ 配置 E ]
+}
+```
+
+请求`/`将匹配配置A，请求`/index.html`将匹配配置B，`/documents/document.html`请求将匹配配置C，请求`/images/1.gif`将匹配配置D，`/documents/1.jpg`将匹配配置E。
+
+使用`@`前缀可以定义一个命名地址。此地址不用于常规的请求处理，而是用于请求重定向。它不能被嵌套，也不能包含嵌套地址。
+
+如果一个地址定义为前缀匹配且以`/`结尾，并且请求处理于`proxy_pass`、`fastcgi_pass`、`uwsgi_pass`、`scgi_pass`或`memcached_pass`等指令，那么将会执行特殊的处理过程。如果请求的URL满足前缀匹配，但是没有`/`结尾，Nginx将响应301永久跳转到原请求的URL并加上`/`后缀。如果这不是你所期望的，那么应该像如下形式来定义精确匹配：
+
+```
+location /user/
+{
+    proxy_pass http://user.example.com;
+}
+location = /user
+{
+    proxy_pass http://login.example.com;
+}
+```
 
 
 
