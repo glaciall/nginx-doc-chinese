@@ -772,6 +772,523 @@ location = /user
 }
 ```
 
+-----
+
+> 语法：log_not_found on | off;
+
+> 默认：log_not_found on;
+
+> 上下文：http, server, location
+
+启用或禁用404未找到的请求到错误日志（见`error_log`指令）里。
+
+-----
+
+> 语法：log_subrequest on | off;
+
+> 默认：log_subrequest off;
+
+> 上下文：http, server, location
+
+启用或禁用内部请求到访问日志（见`access_log`指令）里。
+
+-----
+
+> 语法：max_ranges number;
+
+> 默认：---
+
+> 上下文：http, server, location
+
+    自1.1.2版本起
+
+设置`byte-range`分段请求的最大值。请求时超过此设定值将忽略`byte-range`的值。默认情况下，nginx未对`byte-range`值作限定。设置为0将禁用`byte-range`功能。
+
+-----
+
+> 语法：merge_slashes on | off;
+
+> 默认：merge_slashes on;
+
+> 上下文：http, server
+
+启用或禁用对URL中连续的`/`合并为一个的功能。
+
+注意，合并是正确前缀URL及正则表达式匹配的必要手段，如果没有合并，请求`//scripts/one.php`将不会匹配如下规则：
+
+```
+location / scripts/
+{
+    ...
+}
+```
+
+同时可能会视为静态文件来响应请求。所以需要将其转换为`/scripts/one.php`。
+
+当URL里包含有Base64编码的时，禁用合并功能是有必要的，因为Base64编码里含有`/`符号。不过为了安全起见，最好是启用此功能。
+
+如果此指令设定于`server`级别，此设定仅当只服务器是默认服务器时才启用，同时适用于所有监听于同一地址与端口的虚拟服务器。
+
+-----
+
+> 语法：msie_padding on | off;
+
+> 默认：msie_padding on;
+
+> 上下文：http, server, location
+
+启用或禁用添加HTML注释到MSIE浏览器的大于400状态码的请求，将其响应内容补充到至少512字节。（译注：IE浏览器在响应错误页面时，如果服务器响应的内容长度不足，将会显示浏览器自带的错误页面。）
+
+-----
+
+> 语法：msie_refresh on | off;
+
+> 默认：msie_refresh off;
+
+> 上下文：http, server, location
+
+为MSIE浏览器启用或禁用发送刷新以替代重定向。
+
+-----
+
+> 语法：open_file_cache off;
+
+>       open_file_cache max=N [inactive=time];
+
+> 默认：open_file_cache off;
+
+> 上下文：http, server, location
+
+配置缓存可以保存如下内容：
+* 打开的文件描述符的大小及修改次数。
+* 目录是否存在的信息。
+* 文件查找错误，比如“文件未找到”、“无读取权限”等。
+    错误信息的缓存应该由`open_file_cache_errors`指令分别启用。
+
+指令拥有如下参数：
+
+max
+
+    设置缓存的最大个数。当缓存己满时，最近最少未使用（LRU）的将会被移除。
+
+inactive
+
+    设置元素未使用而被删除的闲置时间长度，默认60秒。
+
+off
+
+    禁用此缓存。
+
+例：
+```
+open_file_cache             max=100 inactive=20x;
+open_file_cache_valid       30s;
+open_file_cache_min_uses    2;
+open_file_cache_errors      on;
+```
+
+-----
+
+> 语法：open_file_cache_errors on | off;
+
+> 默认：open_file_cache_errors off;
+
+> 上下文：http, server, location
+
+启用或禁用文件查找错误的缓存。
+
+-----
+
+> 语法：open_file_cache_min_uses number;
+
+> 默认：open_file_cache_min_uses 1;
+
+> 上下文：http, server, location
+
+设置由`open_file_cache`指令设置的`inactive`闲置时间内文件的最少访问次数。需要维持一个文件描述符以保持在缓存中的打开状态。
+
+-----
+
+> 语法：open_file_cache_valid time;
+
+> 默认：open_file_cache_valid 60s;
+
+> 上下文：http, server, location
+
+设置在此时间之后，由`open_file_cache`的缓存元素应该被验证。
+
+-----
+
+> 语法：output_buffers number size;
+
+> 默认：output_buffers 2 32k;
+
+> 上下文：http, server, location
+
+设置从磁盘上读取响应内容的缓冲区的数量、大小。
+
+-----
+
+> 语法：port_in_redirect on | off;
+
+> 默认：port_in_redirect on;
+
+> 上下文：http, server, location
+
+启用或禁用由nginx发出的绝对跳转时指明端口。
+
+重定向时的首选服务器名称由`server_name_in_redirect`指令来控制。
+
+-----
+
+> 语法：postone_ouput size;
+
+> 默认：postone_output 1460;
+
+> 上下文：http, server, location
+
+如果可能，nginx将延迟发送客户端数据，直到准备了`size`指定大小的数据才开始。值设置为0将禁用延迟发送。
+
+-----
+
+> 语法：read_ahead size;
+
+> 默认：read_ahead 0;
+
+> 上下文：http, server, location
+
+设置系统内核在处理文件时的预读数量。
+
+在linux上，系统调用`posix_fadvise(0, 0, POSIX_FADV_SEQUENTIAL)`，所以`size`参数将被忽略。
+
+在FreeBSD上，自FreeBSE 9.0-CURRENT版本起，系统调用`fcntl(O_READAHEAD, size)`。FreeBSD 7需要打[补丁](http://sysoev.ru/freebsd/patch.readahead.txt)来支持。
+
+-----
+
+> 语法：recursive_error_pages on | off;
+
+> 默认：recursive_error_pages off;
+
+> 上下文：http, server, location
+
+启用或禁用使用`error_page`指令进行多次跳转。最大重定向次数同`internal`内部请求的限制，10次。
+
+-----
+
+> 语法：request_pool_size size;
+
+> 默认：request_pool_size 4k;
+
+> 上下文：http, server
+
+允许精确调整每个请求的内存分配。此指令对性能的影响较小，不需要修改。
+
+-----
+
+> 语法：reset_timeout_connection on | off;
+
+> 默认：reset_timeout_connection off;
+
+> 上下文：http, server, location
+
+启用或禁用重置己超时的连接。在关闭套接字前，`SO_LINGER`选项启用并且超时值为0。关闭时发送`TCP RST`到客户端，并且释放所有分配的内存，这可以避免己关闭的套接字处于长时间的`FIN_WAIT1`状态。
+
+注意：keep-alive的持久连接将是正常关闭。
+
+-----
+
+> 语法：resolver address ... [valid=time] [ipv6=on|off]
+
+> 默认：---
+
+> 上下文：http, server, location
+
+配置针对于上游服务器到IP地址的域名解析服务器，例如：
+
+> resolver 127.0.0.1 [::1]:4343;
+
+域名服务器的地址可以是域名或IP，及一个可选的端口，默认端口为53。域名服务器以round-robin轮询式进行查询。
+
+    1.1.7版本前，只能配置一个域名服务器，自1.3。1及1.2.2版本起，域名服务器支持以IPv6的地址进行设定。
+
+默认情况下，nginx将同时查询IPv4及IPv6地址，如果不需要IPv6地址，可以以`ipv6=off`参数来关闭它。
+
+    自1.5.8版本起，Nginx才支持IPv6地址的解析。
+
+nginx将以响应结果里的TTL值进行缓存，你可以使用`valid`参数来覆盖此值：
+
+> resolver 127.0.0.1 [::1]:5353 valid=30s;
+
+> 在1.1.9前，nginx不可调整缓存时间，其始终缓存5分钟。
+
+> 为了避免DNS污染，推荐使用可信任的局域网络服务器或DNSS。
+
+-----
+
+> 语法：resolver_timeout time;
+
+> 默认：resolver_timeout 30s;
+
+> 上下文：http, server, location
+
+设置域名解析超时，如：
+
+> resolver_timeout 5s;
+
+-----
+
+> 语法：root path;
+
+> 默认：root html;
+
+> 上下文：http, server, location, if in location
+
+设置请求的根目录，例如：
+
+```
+location /i/
+{
+    root /data/w3/;
+}
+```
+
+文件`/data/w3/i/top.gif`将会响应`/i/top.gif`的请求。
+
+参数`path`的值可以包含变量，除了`$document_root`和`$realpath_root`。
+
+请求的URL路径仅仅只是追加到`root`指令指定的值的后面，如果需要修改URL，应该使用`alias`指令。
+
+-----
+
+> 语法：satisfy all | any;
+
+> 默认：satisfy all;
+
+> 上下文：http, server, location
+
+如果一个URL由`ngx_http_access_module`、`ngx_http_auth_basic_module`、`ngx_http_auth_request_module`、`ngx_http_auth_jwt_module`等模块设定了访问控制权限，那该指令决定了是当全部符合时允许还是任意一个符合时允许访问。（即：满足所有条件或是满足任意一个条件）。
+
+例外：
+
+```
+location /
+{
+    satisfy any;
+    
+    allow 192.168.1.0/32;
+    deny all;
+    
+    auth_basic              "closed site";
+    auth_basic_user_file    conf/htpasswd;
+}
+```
+
+-----
+
+> 语法：send_lowat size;
+
+> 默认：send_lowat 0;
+
+> 上下文：http, server, location
+
+如果设定为非0值，nginx将会尝试最小化发送操作的数量，通过使用`kqueue`方法的`NOTE_LOWAT`标志或是`SO_SNDLOWAT`套接字选项。此二次都需要`size`参数值。
+
+此指令在linux、Solaris、Windows系统上不生效。
+
+-----
+
+> 语法：send_timeout time;
+
+> 默认：send_timeout 60s;
+
+> 上下文：http, server, location
+
+设置发送到客户端时的超时时长。此超时只用于两个成功的发送操作之间隔，不是用于整个下发。如果客户端在此时间内未接收到数据，则将关闭掉此连接。
+
+-----
+
+> 语法：sendfile on | off;
+
+> 默认：sendfile off;
+
+> 上下文：http, server, location, if in location
+
+启用或禁用`sendfile()`。
+
+自nginx 0.8.12及FreeBSD 5.2.1版本起，`aio`可以为`sendfile()`预加载数据。
+
+```
+location /video/
+{
+    sendfile    on;
+    tcp_nopush  on;
+    aio         on;
+}
+```
+
+在这个配置样例里，以`SF_NODISKIO`标志位调用`sendfile()`，磁盘I/O将不阻塞，而是报告数据不在内存中。nginx通过读取一个字节来初始化一个异步数据加载。在第一次读取时，FreeBSD内核载入文件的前128K字节到内存中，虽然接下来的读取只会加载16K块的数据。这可以通过`read_ahead`指令进行修改。
+
+    在1.7.11前，预载入可以由`aio sendfile`来启用。
+
+-----
+
+> 语法：sendfile_max_chunk size;
+
+> 默认：sendfile_max_chunk 0;
+
+> 上下文：http, server, location
+
+设置为非0值，将限制单个`sendfile()`调用发送的数据量。如果没有这个限制，一个快速的连接将占用整个工作进程。
+
+-----
+
+> 语法：server { ... }
+
+> 默认：---
+
+> 上下文：http
+
+配置一个虚拟服务器。基于IP的服务器和基于域名的服务器间没有明确的区分。`listen`指令描述了所有接收连接的用于监听的地址与端口，`server_name`指令列出了所有的服务器名称。详情可见“**nginx如何处理请求**”章节。
+
+-----
+
+> 语法：server_name name...;
+
+> 默认：server_name *;
+
+> 上下文：server
+
+设置虚拟服务器的名称，比如：
+
+```
+server
+{
+    server_name example.com www.example.com;
+}
+```
+
+第一个名称将作为首选服务器名称。
+服务器名称可包含星号（*）来代替第一部分或最后一部分。
+
+```
+server
+{
+    server_name example.com *.exmaple.com www.exmaple.*;
+}
+```
+
+这样的名称叫做通配名称。
+其中，前两个名称可以合并成同一个。
+
+```
+server
+{
+    server_name .example.com;
+}
+```
+
+同样的，你可以在名称前加上`~`符号来使用正则表达式匹配：
+
+```
+server
+{
+    server_name www.example.com ~^www\d+\.example\.com$;
+}
+```
+
+正则表达式可以使用捕获组，可以在接下来的其它指令中使用。（0.7.40版本起）
+
+```
+server
+{
+    server_name ~^(www\.)?(.+)$
+    
+    location /
+    {
+        root /sites/$2;
+    }
+}
+
+server
+{
+    server_name _;
+    location /
+    {
+        root /sites/default;
+    }
+}
+```
+
+命名捕获组将创建相应的变量，你可以在接下来的其它指令中引用它：
+
+```
+server
+{
+    server_name ~^(www\.)?(?<domain>.+)$;
+    
+    location /
+    {
+        root /sites/$domain;
+    }
+}
+
+server
+{
+    server_name _;
+    
+    location /
+    {
+        root /sites/default;
+    }
+}
+```
+
+如果指令的参数值设置为`$hostname`，将会用主机名（hostname）代替。
+
+同样，你可以使用空的服务器名称：
+
+```
+server
+{
+    server_name www.example.com "";
+}
+```
+
+这将允许服务器处理无`Host`请求头的请求，用于代替同一地址：端口上的默认服务器。
+
+    在0.8.48版本前，默认会使用机器的主机名。
+
+在以服务器名称进行搜索时，名称匹配优先于变量匹配（通配符及正则表达式），匹配顺序如下：
+
+1. 精确字符串匹配。
+2. 最长的前缀通配符匹配，如：`*.example.com`。
+3. 最长的后缀通配符匹配，如：`mail.*`。
+4. 第一个匹配的正则表达式（以配置文件中的出现顺序进行查找）。
+
+更多关于服务器名称的描述详见“[服务器名称](http://nginx.org/en/docs/http/server_names.html)”章节。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
