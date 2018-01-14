@@ -2,7 +2,7 @@
 
 ### HTTP请求结构及命名
 因为在翻译中，可能我使用的翻译名称不当，为免引发歧义，现将HTTP请求头的命名以图例表示出来：
-<img src="./img/request.png" />
+<img src="../img/request.png" />
 
 > 语法：absolute_redirect on|off
 
