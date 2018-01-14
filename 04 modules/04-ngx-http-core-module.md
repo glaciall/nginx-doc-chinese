@@ -1267,53 +1267,485 @@ server
 
 更多关于服务器名称的描述详见“[服务器名称](http://nginx.org/en/docs/http/server_names.html)”章节。
 
+-----
 
+> 语法：server_name_in_redirect on | off;
 
+> 默认：server_name_in_redirect off;
 
+> 上下文：http, server, location
 
+启用或禁用由nginx发起的绝对跳转时的`server_name`设定的首先服务器名称的使用。如果禁用此选项，则将使用请求头里的`Host`字段值，如果无`Host`字段，则将使用此虚拟服务器的IP。
 
+-----
 
+> 语法：server_name_hash_bucket_size size;
 
+> 默认：server_name_hash_bucket_size 512;
 
+> 上下文：http
 
+设置服务器名称的哈希表的最大大小。
 
+-----
 
+> 语法：server_tokens on | off | build | string;
 
+> 默认：server_tokens on;
 
+> 上下文：http, server, location
 
+启用或禁用在响应错误页面时在响应头`Server`字段里附带nginx版本号。
 
+`build`参数将指明同时发送nginx build版本名称。
 
+另外，自1.9.13版本起，可以使用带有变量的`string`参数来指定下发错误页面时的`Server`响应头字段信息。使用空字符串将不再下发`Server`字段。
 
+-----
 
+> 语法：tcp_nodelay on | off;
 
+> 默认：tcp_nodelay on;
 
+> 上下文：http, server, location
 
+启用或禁用`TCP_NODELAY`选项，此选项仅当连接转变为持久连接状态时启用。
 
+-----
 
+> 语法：tcp_nopush on | off;
 
+> 默认：tcp_nopush off;
 
+> 上下文：http, server, location
 
+启用或禁用在FreeBSD上使用`TCP_NOPUSH`选项，或是在Linux上的`TCP_CORK`选项。此选项仅在使用`sendfile`时启用，它将允许：
 
+* 在同一个包里发送响应头以及文件的开始部分（Linux及FreeBSD 4.*）； 
+* 在一个完整包里发送一个文件。
 
+-----
 
+> 语法：try_files file ... uri;
 
+>       try_files file ... =code;
 
+> 默认：---
 
+> 上下文：server, location
 
+在当前上下文中以指定的顺序进行文件是否存在的检查来处理请求。`file`的路由由`root`或`alias`指定的路由组合而成，如果以`/`结尾的如`$uri/`，则将检查目录是否存在。如果文件不存在，则将产生内部跳转到由`uri`参数指定的路径上。例：
 
+```
+location /images/
+{
+    try_files $uri /images/default.gif;
+}
 
+location = /images/default.gif
+{
+    expires 30s;
+}
+```
 
+最后一个参数可以指向一个命名地址，如下例所示，自0.7.51版本起，最后一个参数可以是一个响应码：
 
+```
+location /
+{
+    try_files $uri $uri/index.html $uri.html =404;
+}
+```
 
+混合代理样例：
 
+```
+location /
+{
+    try_files /system/maintenance.html
+                $uri $uri/index.html $uri.html
+                @mongrel;
+}
 
+location @mongrel
+{
+    proxy_pass http://mongrel;
+}
+```
 
+Drupal/FastCGI样例：
 
+```
+location /
+{
+    try_files $uri $uri/ @drupal;
+}
 
+location ~ \.php$
+{
+    try_files $uri @drupal;
+    
+    fastcgi_pass ...;
+    
+    fastcgi_param SCRIPT_FILENAME   /path/to$fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME       $fastcgi_script_name;
+    fastcgi_param QUERY_STRING      $args;
+    
+    ... 其它fastcgi参数
+}
 
+location @drupal
+{
+    fastcgi_pass ...;
+    
+    fastcgi_param SCRIPT_FILENAME   /path/to/index.php;
+    fastcgi_param SCRIPT_NAME       /index.php;
+    fastcgi_param QUERY_STRING      q=$uri&$args;
+}
+```
 
+在以下例子中：
 
+```
+location /
+{
+    try_files $uri $uri/ @drupal;
+}
+```
 
+`try_files`等价于：
 
+```
+location /
+{
+    error_page 404 =@drupal;
+    log_not_found off;
+}
+```
+
+以及：
+
+```
+location ~ \.php$
+{
+    try_files $uri @drupal;
+    
+    fastcgi_pass ...;
+    
+    fastcgi_param SCRIPT_FILENAME   /path/to$fastcgi_script_name;
+    
+    ...
+}
+```
+
+`try_files`在发送到FastCGI服务器之前选检查PHP文件是否存在。
+
+Wordpress以及Joomla样例：
+
+```
+location / {
+    try_files $uri $uri/ @wordpress;
+}
+
+location ~ \.php$ {
+    try_files $uri @wordpress;
+
+    fastcgi_pass ...;
+
+    fastcgi_param SCRIPT_FILENAME /path/to$fastcgi_script_name;
+    ... other fastcgi_param's
+}
+
+location @wordpress {
+    fastcgi_pass ...;
+
+    fastcgi_param SCRIPT_FILENAME /path/to/index.php;
+    ... other fastcgi_param's
+}
+```
+
+-----
+
+> 语法：types { ... }
+
+> 默认：types { text/html html; image/gif gif; image/jpeg jpg; }
+
+> 上下文：http, server, location
+
+配置响应文件扩展名的MIME映射。扩展名大小写不敏感，多个扩展名可以映射到同一个类型上，例如：
+
+```
+types 
+{
+    application/octet-stream bin exe dll;
+    application/octet-stream deb;
+    application/octet-stream dmg;
+}
+```
+
+nginx的完整的映射表存放于conf/mime.conf文件中。
+
+为指定URL发送`application/octet-stream`MIME类型头，可以像如下配置：
+
+```
+location / download/
+{
+    types {};
+    default_type application/octet-stream;
+}
+```
+
+-----
+
+> 语法：types_hash_bucket_size size;
+
+> 默认：types_hash_bucket_size 64;
+
+> 上下文：http, server, location
+
+设置MIME类型的哈希表桶大小。
+
+-----
+
+> 语法：types_hash_max_size size;
+
+> 默认：types_hash_max_size 1024;
+
+> 上下文：http, server, location
+
+设置MIME类型哈希表的最大大小。
+
+-----
+
+> 语法：underscores_in_headers on | off;
+
+> 默认：underscores_in_headers off;
+
+> 上下文：http, server
+
+启用或禁用客户端请求头里的下划线。如果禁用下划线，则会将带有下划线的请求头交由`ignore_invalid_headers`指令进行处理。
+
+如果指令声明在`server`级别，则仅在服务器是默认服务器时才使用该指令。指命的值也适用于监听于相同地址与端口的所有虚拟服务器。
+
+-----
+
+> 语法：variables_hash_bucket_size size;
+
+> 默认：variables_hash_bucket_size 64;
+
+> 上下文：http
+
+设置变量的哈希表的桶大小。
+
+-----
+
+> 语法：variables_hash_max_size size;
+
+> 默认：variables_hash_max_size 1024;
+
+> 上下文：http
+
+设置变量的哈希表的最大大小。
+
+## 内置变量表
+
+`ngx_http_core_module`模块支持所有Apache服务器的变量。首先，客户端请求头的每一个字段值都将表述为变量，比如：`$http_user_agent`、`$http_cookie`等等。
+
+$arg_name
+
+    请求行里的参数`name`，相当于参数值引用。
+    
+$args
+
+    请求行里的所有参数。
+
+$binary_rmote_addr
+
+    二进制形式的客户端地址，IPv4地址始终是4字节，IPv6地址是16字节。
+
+$body_bytes_sent
+
+    发送到客户端的总字节数，不包含响应头。此变量兼容于Apache的`mod_log_config`模块的"%B"参数。
+
+$bytes_sent
+
+    发送到客户端的总字节数（含响应头）。
+
+$connection
+
+    连接序列号。
+
+$connection_requests
+
+    此请求在当前连接里的序号。
+
+$content_length
+
+    `Content-Length`请求头字段值。
+
+$cookie_name
+
+    获取名为`name`的cookie项的值。
+
+$document_root
+
+    当前请求的由`root`或`alias`指定的值。
+
+$document_uri
+
+    同$uri;
+
+$host
+
+    客户端请求的服务器名称，优先级：请求行里的host名称，或是请求头里的`Host`字段，或是nginx匹配到的。
+
+$hostname
+
+    主机名/机器名称
+
+$http_name
+
+    获取请求头的字段值，变量名的最后一段由请求头字段转换而来：全部小写，中划线改为下划线。
+
+$https
+
+    值如果是`on`则表明当前请求是SSL模式，否则将是空字符串。
+
+$is_args
+
+    如果请求行有参数，值为`?`，否则为空字符串。
+
+$limit_rate
+
+    设置此值将启用速率限制。
+
+$msec
+
+    以毫秒为单位的当前时间。
+
+$nginx_version
+
+    nginx版本号
+
+$pid
+
+    工作进程的PID
+
+$pipe
+
+    “p” if request was pipelined, “.” otherwise。（不知道什么叫piplined）
+
+$proxy_protocol_addr
+
+    PROXY协议头里的客户端地址，否则为空字符串。PROXY协议必须由`listen`指令的`proxy_protocol`参数启用才行。
+
+$proxy_protocol_port
+
+    PROXY协议的客户端端口，否则为空字符串。
+
+$query_string
+
+    等同于$args
+
+$realpath_root
+
+    当前请求的绝对路径，所有的符号链接都将转为实际路径。
+
+$remote_addr
+
+    客户端IP
+
+$remote_user
+
+    客户端请求的由Basic认证的用户名。
+
+$request
+
+    原始的请求行。请求里的第一行。
+
+$request_body
+
+    请求体，header之后的原始内容。
+
+$request_body_file
+
+    请求体的临时文件名。在请求处理完成后，此文件将被删除，为了始终能够保存请求体到文件中，应该启用`client_body_in_file_only`选项。当临时文件名传递到被代理的请求里或是请求到FastCGI/uwsgi/SCGI服务器上时，应当用`proxy_pass_request_body off`、`fastcgi_pass_request_body off`、`uwsgi_pass_request_body off`、`scgi_pass_request_body off`指令来禁用传递文件名。
+
+$request_completion
+
+    如果请求完成，值为OK，否则为空字符串。
+
+$request_filename
+
+    相对于`root`或`alias`及请求URI的当前请求的路径。
+
+$request_id
+
+    唯一的请求标识符，16位，十六进制。
+
+$request_length
+
+    请求大小，包含请求行、请求头及请求体。
+
+$reqest_method
+
+    请求方法，一般为GET或POST。
+
+$request_time
+
+    以毫秒计的请求处理时长。自客户端读取的第一个字节起计时。
+
+$request_uri
+
+    整个原始请求URI，含参数。
+
+$scheme
+
+    请求协议，如http、https
+
+$sent_http_name
+
+    强制下发响应的头，变量的最后一段是转换后的请求头名称，全部转小写，中划线转下划线。
+
+$sent_trailer_name
+
+    在响应结束时发送的任意字段，变量的最后一段是转换后的请求头名称，全部转小写，中划线转下划线。
+
+$server_addr
+
+    接受此请求的服务器地址。为了得到此变量值通常会有系统调用的代价，应该在`listen`指令指明IP地址，并且使用`bind`参数来避免。
+
+$server_name
+
+    接受此请求的服务器名称。
+
+$server_port
+
+    接受此请求的服务器端口。
+
+$server_protocol
+
+    请求协议，通常是`HTTP/1.0`、`HTTP/1.1`或`HTTP/2.0`。
+
+$status
+
+    响应码。
+
+$tcpinfo_rtt, $tcpinfo, $tcpinfo_snd_cwnd, $tcpinfo_rcv_space
+
+    客记有TCP连接信息，在支持`TCP_INFO`选项的系统上可用。
+
+$time_iso8601
+
+    ISO 8601标准格式的本地时间。
+
+$time_local
+
+    标准日志格式的本地时间。
+
+$uri
+
+    当前请求的URI。
+    此变量的值在处理中可能会发生变化，比如在内部转跳或是使用索引文件时。
 
 
