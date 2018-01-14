@@ -16,6 +16,10 @@
 - nginx如何处理TCP/UDP会话
 - [关于nginScript](./01%20introduction/15-about-nginscript.md)
 
+## HTTP请求结构及命名
+因为在翻译中，可能我使用的翻译名称不当，为免引发歧义，现将HTTP请求头的命名以图例表示出来：
+<img src="./img/request.png" />
+
 ## HOW-TO
 - [源码编绎安装Nginx](./02%20how-to/01-building-nginx-from-sources.md)
 - 在win32平台上使用Visual C编绎安装nginx
