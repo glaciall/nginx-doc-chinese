@@ -1577,7 +1577,7 @@ $connection
 
 $connection_requests
 
-    此请求在当前连接里的序号。
+    当前连接所处理的请求数。
 
 $content_length
 
