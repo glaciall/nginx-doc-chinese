@@ -1733,7 +1733,7 @@ $status
 
 $tcpinfo_rtt, $tcpinfo, $tcpinfo_snd_cwnd, $tcpinfo_rcv_space
 
-    客记有TCP连接信息，在支持`TCP_INFO`选项的系统上可用。
+    客户端TCP连接信息，在支持`TCP_INFO`选项的系统上可用。
 
 $time_iso8601
 
