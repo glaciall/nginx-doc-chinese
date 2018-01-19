@@ -71,7 +71,7 @@ events {
 }
 ```
 
-    需要使用此指令，需要以--with-debug参数来编绎nginx。
+    使用此指令，需要以--with-debug参数来编绎nginx。
 
 -----
 
