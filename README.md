@@ -30,10 +30,10 @@
 - 指令表
 - 变量表
 
-- 核心指令
+- [核心指令](./04%20modules/03-core-functionality.md)
 
 - [ngx_http_core_module](./04%20modules/04-ngx-http-core-module.md)
-- ngx_http_access_module
+- [ngx_http_access_module](./04%20modules/05-ngx-http-access-module.md)
 - ngx_http_addition_module
 - ngx_http_api_module
 - ngx_http_auth_basic_module
