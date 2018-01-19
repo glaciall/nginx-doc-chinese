@@ -1,5 +1,9 @@
 ## ngx-http-core模块
 
+### HTTP请求结构及命名
+因为在翻译中，可能我使用的翻译名称不当，为免引发歧义，现将HTTP请求头的命名以图例表示出来：
+<img src="../img/request.png" />
+
 > 语法：absolute_redirect on|off
 
 > 默认：absolute_redirect on;
@@ -1577,7 +1581,7 @@ $connection
 
 $connection_requests
 
-    此请求在当前连接里的序号。
+    当前连接所处理的请求数。
 
 $content_length
 
@@ -1733,7 +1737,7 @@ $status
 
 $tcpinfo_rtt, $tcpinfo, $tcpinfo_snd_cwnd, $tcpinfo_rcv_space
 
-    客记有TCP连接信息，在支持`TCP_INFO`选项的系统上可用。
+    客户端TCP连接信息，在支持`TCP_INFO`选项的系统上可用。
 
 $time_iso8601
 
