@@ -32,7 +32,7 @@
 
 ## 模块参考
 - 指令表
-- 变量表
+- [变量表](./04%20modules/02-variables.md)
 
 - [核心指令](./04%20modules/03-core-functionality.md)
 
